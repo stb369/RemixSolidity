@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./12_ResourceManager.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+
+interface IGodTicket is IERC20 {
+    function burnFrom(address account, uint256 amount) external;
+}
+/// @title EnvironmentCore
+/// @notice 森・鉱山での作業、エネルギー回復、資源収穫のロジックを担う
+contract EnvironmentCore is Ownable {
+
+    uint256 constant SCALE = 1_000_000; // X,Yをまとめる係数（座標範囲に応じて設定）
+
+    uint256 public constant INN     = 1002;  // 宿屋（ガバー↔︎エネルギー）
+    uint256 public constant FOREST  = 2003;  // 森(エネルギー↔︎木材)
+    uint256 public constant QUARRY  = 2004;  // 採石場(エネルギー↔︎石材)
+    uint256 public constant MINE    = 2005;  // 鉱山(エネルギー↔︎鉄鉱石)
+    uint256 public constant DIAMINE = 2006;  // ダイア鉱山(エネルギー↔︎ダイアモンド)
+    uint256 public constant TIMBEREXC  = 1003;  // 木材取引所(ガバー↔︎木材)
+    uint256 public constant STONEEXC   = 1004;  // 石材取引所(ガバー↔︎石材)
+    uint256 public constant IRONEXC    = 1005;  // 鉄材取引所(ガバー↔︎鉄鉱石)
+    uint256 public constant DIAMONDEXC = 1006;  // ダイアモンド取引所(ガバー↔︎ダイアモンド)
+
+    uint256 public constant ENERGY_MAX = 100;
+    uint256 public constant ENERGY_RECOVERY_INTERVAL = 1 hours;
+    uint256 public constant ENERGY_RECOVERY_AMOUNT = 10;
+
+    IGodTicket public immutable godTicket;
+
+    ResourceManager public resource;
+
+    struct ResourceSpot {
+        uint256 spotType;
+        uint256 level;
+        bool exists;
+    }
+
+    mapping(uint256 => ResourceSpot) internal spots; //keyは座標コード
+    mapping(address => uint256)  internal lastRecovery; //keyはプレイヤーのアドレス
+    mapping(address => uint256) internal energyBalance; //keyはプレイヤーのアドレス
+
+
+    event WorkPerformed(address indexed user,int256 x, int256 y, uint256 spotType);
+    event SpotCreated(int256 x, int256 y, uint256 spotType);
+    event ResourceDeployed(address resourceAddress);
+
+    constructor(string memory baseURI,  address godTicketAddress) Ownable(msg.sender) {
+        resource = new ResourceManager(baseURI);
+        godTicket = IGodTicket(godTicketAddress);
+        emit ResourceDeployed(address(resource));
+    }
+
+    // ===== 内部ユーティリティ =====
+    function encodeCoord(int256 x, int256 y) internal pure returns (uint256) {
+        // 符号付きintをそのまままとめると危険なので、オフセットを使う例
+        uint256 ux = uint256(int256(x + 5_000)); // 座標範囲を -5000 ~ +5000 と仮定
+        uint256 uy = uint256(int256(y + 5_000));
+        return ux * SCALE + uy;
+    }
+
+    // ===== スポット作成 (DAOのInitPoolから呼ばれる)=====
+    function createSpot(int256 x, int256 y, uint256 spotType, uint256 initialScale) public virtual onlyOwner {
+        uint256 key = encodeCoord(x, y);
+        require(!spots[key].exists, "Spot already exists");
+        spots[key] = ResourceSpot(spotType,initialScale,true);
+        emit SpotCreated(x, y, spotType);
+    }
+
+    // ===== 時間経過によるエネルギー回復 =====
+    function claimEnergy() public {
+        uint256 elapsed = block.timestamp - lastRecovery[msg.sender];
+        require(elapsed >= ENERGY_RECOVERY_INTERVAL, "Wait more time");
+
+        uint256 recoverAmount = (elapsed / ENERGY_RECOVERY_INTERVAL) * ENERGY_RECOVERY_AMOUNT;
+        if (energyBalance[msg.sender] + recoverAmount > ENERGY_MAX) {
+            recoverAmount = ENERGY_MAX - energyBalance[msg.sender];
+        }
+
+        energyBalance[msg.sender] += recoverAmount;
+        lastRecovery[msg.sender] = block.timestamp;
+        resource.mint(msg.sender, resource.ENERGY(), recoverAmount);
+    }
+
+    
+
+    /// @notice GodTicketを1枚burnしないと実行できないmint
+    function mintResourceToken(uint256[] memory tokenId, uint256[] memory amount) external {
+        // --- 1️⃣ GodTicketを持っているかチェック ---
+        require(godTicket.balanceOf(msg.sender) >= 1, "Need at least 1 GodTicket");
+
+        // --- 2️⃣ GodTicketをburn ---
+        // GodTicketコントラクト側にburnFromの権限を与えておく必要あり
+        godTicket.burnFrom(msg.sender, 1);
+
+        // --- 3️⃣ 資源トークンmint ---
+        resource.mintBatch(msg.sender, tokenId, amount);
+    }
+
+    function getSpot (int256 x, int256 y) view virtual public returns(string memory){
+        uint256 key = encodeCoord(x, y);
+        ResourceSpot memory s = spots[key];
+        require(s.exists, "Spot does not exist");
+
+        string memory json = string.concat(
+            "{",
+                "\"key\": ", Strings.toString(key), ",",
+                "\"spotType\": ", Strings.toString(s.spotType), ",",
+                "\"level\": ", Strings.toString(s.level), ",",
+                "\"exists\": ", s.exists ? "true" : "false",
+            "}"
+        );
+
+        return json;
+    }
+
+}
