@@ -58,7 +58,15 @@ contract EnvironmentDAO is EnvironmentCore {
         emit PoolUpdated(key,getArea(_x,_y) ,poolType,_tokenAmountA, _tokenAmountB);
     }
 
-    // ===== 流動性追加 =====
+    //通常インタラクト=流動性プールとの取引
+    function InteractSpot(int256 x, int256 y, uint256 tokenId, uint256 tokenAmount) public equalPosition(x,y){
+        uint256 spotType = spots[encodeCoord(x,y)].spotType;
+        swapTokens(x, y, tokenId, tokenAmount);
+        string memory info = getSpot (x, y);
+        emit SpotInteracted(msg.sender, x, y, spotType, info);
+    }
+
+    // ===== 流動性追加(時期が来たらinternalに直す) =====
     function addLiquidity(
         int256 _x,
         int256 _y,
@@ -92,13 +100,13 @@ contract EnvironmentDAO is EnvironmentCore {
         emit PoolUpdated(key,getArea(_x,_y) ,poolType,_tokenAmountA, _tokenAmountB);
     }
 
-    // ===== Gavar → Energy スワップ → 汎用に変更==   ===
+    // ===== tokenAとtokenBを交換。時期が来たらinternalに変更==   ===
     function swapTokens(
         int256 x,
         int256 y,
         uint256 tokenId,
         uint256 inTokenAmount
-    ) external {
+    ) internal {
         uint256 key = encodeCoord(x, y);
         Pool storage p = pools[key];
         require(p.exists, "Pool not found");

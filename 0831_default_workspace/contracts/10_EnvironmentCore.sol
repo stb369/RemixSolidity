@@ -48,6 +48,7 @@ contract EnvironmentCore is Ownable {
 
 
     event SpotCreated(uint256 indexed area, int256 x, int256 y, uint256 spotType);
+    event SpotInteracted(address indexed user, int256 x, int256 y, uint256 spotType, string result);
     event ResourceDeployed(address resourceAddress);
     event PositionUpdated(address indexed user, int256 x, int256 y);
 
@@ -57,6 +58,22 @@ contract EnvironmentCore is Ownable {
         SCALE = coordScale;
         MovementCost = movementCost;
         emit ResourceDeployed(address(resource));
+    }
+    // --- 修飾子の定義 ---
+    modifier validPosition() {//原点&プレイヤーの初期位置は{500000,500000}である(SCALE = 1000000の場合)
+        //桁の数が一定であるかどうかをチェック(例：SCALE = 1000000なら、500000500000が原点なので12桁)
+        if(playerPosition[msg.sender] < SCALE * SCALE && playerPosition[msg.sender] > (SCALE * SCALE)/10 ) {
+            //条件満たす
+        }else{
+            //条件を満たさないので、初期値に飛ばす
+            playerPosition[msg.sender] = encodeCoord(0,0);
+        }
+        _;
+    }
+
+    modifier equalPosition(int256 x, int256 y) {//インタラクトしようとしているスポットがプレイヤーと同じ座標にあるかどうか
+        require(playerPosition[msg.sender] == encodeCoord(x,y), "you are not at the Spot.");
+        _;
     }
 
     // ===== 内部ユーティリティ =====
@@ -103,6 +120,12 @@ contract EnvironmentCore is Ownable {
         emit SpotCreated(area, x, y, spotType);
     }
 
+    function InteractSpot(int256 x, int256 y) public virtual equalPosition(x,y){
+        string memory info = getSpot (x, y);
+        uint256 spotType = spots[encodeCoord(x,y)].spotType;
+        emit SpotInteracted(msg.sender, x, y, spotType, info);
+    }
+
     // ===== 時間経過によるエネルギー回復 =====
     function claimEnergy() public {
         uint256 elapsed = block.timestamp - lastRecovery[msg.sender];
@@ -147,29 +170,45 @@ contract EnvironmentCore is Ownable {
         return json;
     }
 
-    function movePlayer(address _player, int256 newX, int256 newY)external {
-        uint256 currentCoordCode = playerPosition[_player];
+    function movePlayer(int256 newX, int256 newY)public validPosition{
+        uint256 currentCoordCode = playerPosition[msg.sender];
+        if(playerPosition[msg.sender] == 0){//座標コードの初期化が済んでいない
+
+        }
+
         (int256 currentX,int256 currentY) = decodeCoord(currentCoordCode);
-        require (playerPosition[_player] == currentCoordCode, "invalid current position.");
         //エネルギー必要量を算出
         uint256 delta = absDiffSafe(newX, currentX) + absDiffSafe(newY, currentY);
         uint256 energyAmount = delta * MovementCost;
-        require(resource.balanceOf(_player,resource.ENERGY()) >= energyAmount ,"you need more ENERGY");
+        uint256 balance = resource.balanceOf(msg.sender,resource.ENERGY());
+        require(balance >= energyAmount ,
+            string.concat(
+                "you need more ENERGY. required: ",
+                Strings.toString(energyAmount),
+                ", but you have: ",
+                Strings.toString(balance)
+            ));
         //エネルギーを消費
-        resource.burn(_player, resource.ENERGY(), energyAmount);
+        resource.burn(msg.sender, resource.ENERGY(), energyAmount);
         //プレイヤーの座標を更新
         uint256 newCoord = encodeCoord(newX, newY);
-        playerPosition[_player] = newCoord;
+        playerPosition[msg.sender] = newCoord;
 
-        emit PositionUpdated( _player, newX, newY);
+        emit PositionUpdated(msg.sender, newX, newY);
         
     }
 
-    function setMovementCost(uint256 value) external {
+    function setMovementCost(uint256 value) external onlyOwner{
         MovementCost = value;
     }
 
-    function balanceObTest() public view returns(uint256){
+    function getPlayerPosition() external view returns(int256, int256){
+        uint256 currentCoordCode = playerPosition[msg.sender];
+        (int256 currentX,int256 currentY) = decodeCoord(currentCoordCode);
+        return (currentX, currentY);
+    }
+
+    function balanceObTest() external view onlyOwner returns(uint256){
         uint256 value = resource.balanceOf(msg.sender,resource.ENERGY());
         return value;
     }

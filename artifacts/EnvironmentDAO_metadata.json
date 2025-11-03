@@ -188,6 +188,43 @@
 						"type": "address"
 					},
 					{
+						"indexed": false,
+						"internalType": "int256",
+						"name": "x",
+						"type": "int256"
+					},
+					{
+						"indexed": false,
+						"internalType": "int256",
+						"name": "y",
+						"type": "int256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "spotType",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "result",
+						"type": "string"
+					}
+				],
+				"name": "SpotInteracted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
 						"indexed": true,
 						"internalType": "uint256",
 						"name": "coordCode",
@@ -330,6 +367,52 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "int256",
+						"name": "x",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "y",
+						"type": "int256"
+					}
+				],
+				"name": "InteractSpot",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "int256",
+						"name": "x",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "y",
+						"type": "int256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenAmount",
+						"type": "uint256"
+					}
+				],
+				"name": "InteractSpot",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -485,6 +568,24 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "getPlayerPosition",
+				"outputs": [
+					{
+						"internalType": "int256",
+						"name": "",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "",
+						"type": "int256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "int256",
@@ -579,11 +680,6 @@
 			},
 			{
 				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_player",
-						"type": "address"
-					},
 					{
 						"internalType": "int256",
 						"name": "newX",
@@ -716,34 +812,6 @@
 			{
 				"inputs": [
 					{
-						"internalType": "int256",
-						"name": "x",
-						"type": "int256"
-					},
-					{
-						"internalType": "int256",
-						"name": "y",
-						"type": "int256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "tokenId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "inTokenAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "swapTokens",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "address",
 						"name": "newOwner",
 						"type": "address"
@@ -814,19 +882,19 @@
 	},
 	"sources": {
 		"0831_default_workspace/contracts/10_EnvironmentCore.sol": {
-			"keccak256": "0x07651d65fa28e994dd6208205f6d709db460fdedd26294db169dc34cc30ba3df",
+			"keccak256": "0x8068d4f8bd7c6ba4d4f4dd911b3e89e92e5e189e6beeb3f8d8bddb59b8d43412",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a55144630ecef7545f2e19bd54a0cf8ff147a0cb41d3213ad632bcf095061062",
-				"dweb:/ipfs/QmQN5zhm9zg79FbeqmxttWYojmDKNR87GNrSQ5PuxdFXAo"
+				"bzz-raw://0a5ad0f0a0c562ba1e45a6936d73e83b3e66ec8645f9d5eaf85aea71e801a9e5",
+				"dweb:/ipfs/QmaQDvKWLvXpsGNmPEwFeBgTm4qqrE7X4WEUNvrFQmTcCS"
 			]
 		},
 		"0831_default_workspace/contracts/11_EnvironmentDAO.sol": {
-			"keccak256": "0x1f65d6bc3f7fd05c66ec4512b6dcf853e2e3e59e1f93e90d4f43d6c3e29226c6",
+			"keccak256": "0x2e80547170b4c904e5c457149bf4290a893a682c595465af2345b917a2e3d92a",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://01be9dab1ad6c70b462b91ce0be504385c0252a26661f58f60f719d5230bd8d2",
-				"dweb:/ipfs/QmT7PeJQK1UY168dRF642GCrCkAf9STFHWEQNdv6GPv447"
+				"bzz-raw://00ea81d1d8a8d06289336389f676f0e6a21f52086c7ae21ad596b12187f2d388",
+				"dweb:/ipfs/QmbXcZKqcSBSZpYAai5VUxB7stc1Dx7kvRnDB5ir3MZHCM"
 			]
 		},
 		"0831_default_workspace/contracts/12_ResourceManager.sol": {
