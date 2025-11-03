@@ -20,11 +20,11 @@ contract EnvironmentDAO is EnvironmentCore {
 
     mapping(uint256 => Pool) public pools;  //keyには座標コードが入る。EnvironmentCoreの値と対応させる
 
-    event PoolInitialized(uint256 indexed coordCode, uint256 gavar, uint256 energy);
-    event LiquidityAdded(address indexed user, uint256 indexed coordCode, uint256 gavar, uint256 energy);
+    event PoolUpdated(uint256 indexed coordCode,uint256 indexed area,uint256 poolType, uint256 tokenAmountA, uint256 tokenAmountB);
+    //event LiquidityAdded(address indexed user, uint256 indexed coordCode, uint256 gavar, uint256 energy);
     event SwapTokens(address indexed user, uint256 indexed coordCode, uint256 poolType, uint256 tokenIn, uint256 tokenOut);
 
-    constructor(string memory baseURI,  address godTicketAddress) EnvironmentCore(baseURI, godTicketAddress) {}
+    constructor(string memory baseURI, uint256 coordScale , uint256 movementCost,address godTicketAddress) EnvironmentCore(baseURI,coordScale, movementCost, godTicketAddress) {}
 
     // ===== 定積AMMの初期化 =====
     function initPool(//指定した座標にspotsがまだない想定
@@ -55,7 +55,7 @@ contract EnvironmentDAO is EnvironmentCore {
         });
         
 
-        emit PoolInitialized(key, _tokenAmountA, _tokenAmountB);
+        emit PoolUpdated(key,getArea(_x,_y) ,poolType,_tokenAmountA, _tokenAmountB);
     }
 
     // ===== 流動性追加 =====
@@ -89,7 +89,7 @@ contract EnvironmentDAO is EnvironmentCore {
         p.k = p.tokenReserveA * p.tokenReserveB;
 
 
-        emit LiquidityAdded(msg.sender, key, _tokenAmountA, _tokenAmountB);
+        emit PoolUpdated(key,getArea(_x,_y) ,poolType,_tokenAmountA, _tokenAmountB);
     }
 
     // ===== Gavar → Energy スワップ → 汎用に変更==   ===

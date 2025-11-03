@@ -13,7 +13,8 @@ interface IGodTicket is IERC20 {
 /// @notice 森・鉱山での作業、エネルギー回復、資源収穫のロジックを担う
 contract EnvironmentCore is Ownable {
 
-    uint256 constant SCALE = 1_000_000; // X,Yをまとめる係数（座標範囲に応じて設定）
+    uint256 SCALE = 1_000_000; // X,Yをまとめる係数（座標範囲に応じて設定）。デプロイ時に決めた値から変えてはいけない
+    uint256 MovementCost = 1; // １マス移動するのに必要なエネルギー消費量。単位はWeiであることに注意
 
     uint256 public constant INN     = 1002;  // 宿屋（ガバー↔︎エネルギー）
     uint256 public constant FOREST  = 2003;  // 森(エネルギー↔︎木材)
@@ -39,27 +40,58 @@ contract EnvironmentCore is Ownable {
         bool exists;
     }
 
+
     mapping(uint256 => ResourceSpot) internal spots; //keyは座標コード
     mapping(address => uint256)  internal lastRecovery; //keyはプレイヤーのアドレス
-    mapping(address => uint256) internal energyBalance; //keyはプレイヤーのアドレス
+    mapping(address => uint256) internal playerEnergyMax; //keyはプレイヤーのアドレス。valueは各プレイヤーの現在のエネルギー所持量
+    mapping(address => uint256) internal playerPosition; //keyはプレイヤーのアドレス、valueがCoordCode
 
 
-    event WorkPerformed(address indexed user,int256 x, int256 y, uint256 spotType);
-    event SpotCreated(int256 x, int256 y, uint256 spotType);
+    event SpotCreated(uint256 indexed area, int256 x, int256 y, uint256 spotType);
     event ResourceDeployed(address resourceAddress);
+    event PositionUpdated(address indexed user, int256 x, int256 y);
 
-    constructor(string memory baseURI,  address godTicketAddress) Ownable(msg.sender) {
+    constructor(string memory baseURI, uint256 coordScale,uint256 movementCost ,address godTicketAddress) Ownable(msg.sender) {
         resource = new ResourceManager(baseURI);
         godTicket = IGodTicket(godTicketAddress);
+        SCALE = coordScale;
+        MovementCost = movementCost;
         emit ResourceDeployed(address(resource));
     }
 
     // ===== 内部ユーティリティ =====
-    function encodeCoord(int256 x, int256 y) internal pure returns (uint256) {
+    function encodeCoord(int256 x, int256 y) internal view returns (uint256) {
         // 符号付きintをそのまままとめると危険なので、オフセットを使う例
-        uint256 ux = uint256(int256(x + 5_000)); // 座標範囲を -5000 ~ +5000 と仮定
-        uint256 uy = uint256(int256(y + 5_000));
+        uint256 ux = uint256(x +int256(SCALE)/2); // 座標範囲を -5000 ~ +5000 と仮定
+        uint256 uy = uint256(y +int256(SCALE)/2);
         return ux * SCALE + uy;
+    }
+
+    function decodeCoord(uint256 coordCode) internal view returns (int256,int256) {
+        // 符号付きintをそのまままとめると危険なので、オフセットを使う例
+        int256 intSCALE = int256(SCALE);
+        int256 ux = int256(coordCode)/intSCALE - intSCALE / 2; // 座標範囲を -5000 ~ +5000 と仮定
+        int256 uy = int256(coordCode)%intSCALE - intSCALE / 2;
+        return (ux ,uy);
+    }
+
+    function getArea(int256 x, int256 y) internal view returns(uint256){
+        x = x / 100;
+        y = y / 100;
+        return encodeCoord(x,y);
+    }
+
+    function abs(int256 x) internal pure returns (uint256) {
+        return uint256(x >= 0 ? x : -x);
+    }
+
+    function absDiffSafe(int256 a, int256 b) public pure returns (uint256) {
+        int256 diff = a - b;
+        // type(int256).minのオーバーフロー防止
+        if (diff == type(int256).min) {
+            return uint256(type(int256).max);
+        }
+        return abs(diff);
     }
 
     // ===== スポット作成 (DAOのInitPoolから呼ばれる)=====
@@ -67,25 +99,23 @@ contract EnvironmentCore is Ownable {
         uint256 key = encodeCoord(x, y);
         require(!spots[key].exists, "Spot already exists");
         spots[key] = ResourceSpot(spotType,initialScale,true);
-        emit SpotCreated(x, y, spotType);
+        uint256 area = getArea(x,y);
+        emit SpotCreated(area, x, y, spotType);
     }
 
     // ===== 時間経過によるエネルギー回復 =====
     function claimEnergy() public {
         uint256 elapsed = block.timestamp - lastRecovery[msg.sender];
         require(elapsed >= ENERGY_RECOVERY_INTERVAL, "Wait more time");
-
+        uint256 energy = resource.balanceOf(msg.sender,resource.ENERGY());
         uint256 recoverAmount = (elapsed / ENERGY_RECOVERY_INTERVAL) * ENERGY_RECOVERY_AMOUNT;
-        if (energyBalance[msg.sender] + recoverAmount > ENERGY_MAX) {
-            recoverAmount = ENERGY_MAX - energyBalance[msg.sender];
+        if (energy + recoverAmount > ENERGY_MAX) {
+            recoverAmount = ENERGY_MAX - energy;
         }
 
-        energyBalance[msg.sender] += recoverAmount;
         lastRecovery[msg.sender] = block.timestamp;
         resource.mint(msg.sender, resource.ENERGY(), recoverAmount);
     }
-
-    
 
     /// @notice GodTicketを1枚burnしないと実行できないmint
     function mintResourceToken(uint256[] memory tokenId, uint256[] memory amount) external {
@@ -115,6 +145,33 @@ contract EnvironmentCore is Ownable {
         );
 
         return json;
+    }
+
+    function movePlayer(address _player, int256 newX, int256 newY)external {
+        uint256 currentCoordCode = playerPosition[_player];
+        (int256 currentX,int256 currentY) = decodeCoord(currentCoordCode);
+        require (playerPosition[_player] == currentCoordCode, "invalid current position.");
+        //エネルギー必要量を算出
+        uint256 delta = absDiffSafe(newX, currentX) + absDiffSafe(newY, currentY);
+        uint256 energyAmount = delta * MovementCost;
+        require(resource.balanceOf(_player,resource.ENERGY()) >= energyAmount ,"you need more ENERGY");
+        //エネルギーを消費
+        resource.burn(_player, resource.ENERGY(), energyAmount);
+        //プレイヤーの座標を更新
+        uint256 newCoord = encodeCoord(newX, newY);
+        playerPosition[_player] = newCoord;
+
+        emit PositionUpdated( _player, newX, newY);
+        
+    }
+
+    function setMovementCost(uint256 value) external {
+        MovementCost = value;
+    }
+
+    function balanceObTest() public view returns(uint256){
+        uint256 value = resource.balanceOf(msg.sender,resource.ENERGY());
+        return value;
     }
 
 }
