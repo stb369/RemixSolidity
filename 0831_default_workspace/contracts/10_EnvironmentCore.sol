@@ -92,7 +92,7 @@ contract EnvironmentCore is Ownable {
         return (ux ,uy);
     }
 
-    function getArea(int256 x, int256 y) internal view returns(uint256){
+    function getArea(int256 x, int256 y) public view returns(uint256){
         x = x / 100;
         y = y / 100;
         return encodeCoord(x,y);
