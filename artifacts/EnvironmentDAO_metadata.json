@@ -568,6 +568,30 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "int256",
+						"name": "x",
+						"type": "int256"
+					},
+					{
+						"internalType": "int256",
+						"name": "y",
+						"type": "int256"
+					}
+				],
+				"name": "getArea",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "getPlayerPosition",
 				"outputs": [
@@ -882,11 +906,11 @@
 	},
 	"sources": {
 		"0831_default_workspace/contracts/10_EnvironmentCore.sol": {
-			"keccak256": "0x8068d4f8bd7c6ba4d4f4dd911b3e89e92e5e189e6beeb3f8d8bddb59b8d43412",
+			"keccak256": "0x4cfb1eae659fb23b139536f1b6c4839efe2ee14ac8fabb2e27946b61b2349586",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://0a5ad0f0a0c562ba1e45a6936d73e83b3e66ec8645f9d5eaf85aea71e801a9e5",
-				"dweb:/ipfs/QmaQDvKWLvXpsGNmPEwFeBgTm4qqrE7X4WEUNvrFQmTcCS"
+				"bzz-raw://5b1f232272416f194bffe33d1e38277a8906620d36eef2753f4c727c5bc3ad09",
+				"dweb:/ipfs/QmRxwG79YW3B5T2NmpQWfTZfq3FA22y9nN1xheXGH9JbqN"
 			]
 		},
 		"0831_default_workspace/contracts/11_EnvironmentDAO.sol": {

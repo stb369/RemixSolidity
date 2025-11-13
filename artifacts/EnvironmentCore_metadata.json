@@ -283,6 +283,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "InitializePlayerPosition",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "int256",
@@ -655,11 +662,11 @@
 	},
 	"sources": {
 		"0831_default_workspace/contracts/10_EnvironmentCore.sol": {
-			"keccak256": "0x4cfb1eae659fb23b139536f1b6c4839efe2ee14ac8fabb2e27946b61b2349586",
+			"keccak256": "0x627efd152cafa315ab5c58eecdf10acb73584ef30fa0df91c894e78d68cac092",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5b1f232272416f194bffe33d1e38277a8906620d36eef2753f4c727c5bc3ad09",
-				"dweb:/ipfs/QmRxwG79YW3B5T2NmpQWfTZfq3FA22y9nN1xheXGH9JbqN"
+				"bzz-raw://49a7dac67d08b5ad75efe18a8c5851853b8fd5515355257f51b5d35951b2a248",
+				"dweb:/ipfs/QmUfp9aM91N82fg8XCXnRFosu5i21hmR6WzipKsk5kMixC"
 			]
 		},
 		"0831_default_workspace/contracts/12_ResourceManager.sol": {

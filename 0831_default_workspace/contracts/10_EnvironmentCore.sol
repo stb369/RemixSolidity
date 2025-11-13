@@ -60,17 +60,6 @@ contract EnvironmentCore is Ownable {
         emit ResourceDeployed(address(resource));
     }
     // --- 修飾子の定義 ---
-    modifier validPosition() {//原点&プレイヤーの初期位置は{500000,500000}である(SCALE = 1000000の場合)
-        //桁の数が一定であるかどうかをチェック(例：SCALE = 1000000なら、500000500000が原点なので12桁)
-        if(playerPosition[msg.sender] < SCALE * SCALE && playerPosition[msg.sender] > (SCALE * SCALE)/10 ) {
-            //条件満たす
-        }else{
-            //条件を満たさないので、初期値に飛ばす
-            playerPosition[msg.sender] = encodeCoord(0,0);
-        }
-        _;
-    }
-
     modifier equalPosition(int256 x, int256 y) {//インタラクトしようとしているスポットがプレイヤーと同じ座標にあるかどうか
         require(playerPosition[msg.sender] == encodeCoord(x,y), "you are not at the Spot.");
         _;
@@ -170,11 +159,22 @@ contract EnvironmentCore is Ownable {
         return json;
     }
 
-    function movePlayer(int256 newX, int256 newY)public validPosition{
-        uint256 currentCoordCode = playerPosition[msg.sender];
-        if(playerPosition[msg.sender] == 0){//座標コードの初期化が済んでいない
-
+    function InitializePlayerPosition() public {//原点&プレイヤーの初期位置は{500000,500000}である(SCALE = 1000000の場合)
+        //桁の数が一定であるかどうかをチェック(例：SCALE = 1000000なら、500000500000が原点なので12桁)
+        if(playerPosition[msg.sender] < SCALE * SCALE && playerPosition[msg.sender] > (SCALE * SCALE)/10 ) {
+            //条件満たす
+        }else{
+            //条件を満たさないので、初期値に飛ばす
+            playerPosition[msg.sender] = encodeCoord(0,0);
         }
+        
+    }
+
+    function movePlayer(int256 newX, int256 newY)public{
+        if(playerPosition[msg.sender] == 0){//座標コードの初期化が済んでいない
+            InitializePlayerPosition();
+        }
+        uint256 currentCoordCode = playerPosition[msg.sender];
 
         (int256 currentX,int256 currentY) = decodeCoord(currentCoordCode);
         //エネルギー必要量を算出
