@@ -262,11 +262,11 @@
 	},
 	"sources": {
 		"0831_default_workspace/contracts/10_EnvironmentCore.sol": {
-			"keccak256": "0x627efd152cafa315ab5c58eecdf10acb73584ef30fa0df91c894e78d68cac092",
+			"keccak256": "0xe614a6ea912cebd18474af058dcbd8b46b37b04fb5db75d1ff9d3c3fe30d09e7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://49a7dac67d08b5ad75efe18a8c5851853b8fd5515355257f51b5d35951b2a248",
-				"dweb:/ipfs/QmUfp9aM91N82fg8XCXnRFosu5i21hmR6WzipKsk5kMixC"
+				"bzz-raw://386bc9334a49f7dc0fedfe5d37d2cbe60e9952e45fb2b19e2199edc1636378a7",
+				"dweb:/ipfs/QmdYNxeidX5n2QobRtJe7qReeoDbp99CT23CMe4XgKPYkD"
 			]
 		},
 		"0831_default_workspace/contracts/12_ResourceManager.sol": {

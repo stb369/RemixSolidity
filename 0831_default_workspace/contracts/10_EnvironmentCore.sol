@@ -13,8 +13,8 @@ interface IGodTicket is IERC20 {
 /// @notice 森・鉱山での作業、エネルギー回復、資源収穫のロジックを担う
 contract EnvironmentCore is Ownable {
 
-    uint256 SCALE = 1_000_000; // X,Yをまとめる係数（座標範囲に応じて設定）。デプロイ時に決めた値から変えてはいけない
-    uint256 MovementCost = 1; // １マス移動するのに必要なエネルギー消費量。単位はWeiであることに注意
+    uint256 public  SCALE = 1_000_000; // X,Yをまとめる係数（座標範囲に応じて設定）。デプロイ時に決めた値から変えてはいけない
+    uint256 public MovementCost = 1; // １マス移動するのに必要なエネルギー消費量。単位はWeiであることに注意
 
     uint256 public constant INN     = 1002;  // 宿屋（ガバー↔︎エネルギー）
     uint256 public constant FOREST  = 2003;  // 森(エネルギー↔︎木材)
