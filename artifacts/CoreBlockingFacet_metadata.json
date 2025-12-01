@@ -1,0 +1,92 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "operator",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "userData",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes",
+						"name": "operatorData",
+						"type": "bytes"
+					}
+				],
+				"name": "tokensReceived",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"0831_default_workspace/contracts/17_BlockingFacet.sol": "CoreBlockingFacet"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"0831_default_workspace/contracts/14_DiamondInterfaces.sol": {
+			"keccak256": "0x0bdaefbab756dbe91eff7452a1821613939387620c1793716f464c0fb531c526",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://007ce9ecf67d0ff3f6844dcb40672302fa2520b84e44692b329cb2c19153e073",
+				"dweb:/ipfs/QmdYyqgJLexLNPxYAA6emc24wowtYG7YWBQAvJuoxkeA6z"
+			]
+		},
+		"0831_default_workspace/contracts/17_BlockingFacet.sol": {
+			"keccak256": "0xbd235b9df3084b7929657348738a05f12bc69f157f20fc34b946fae55f7f3fbb",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://684043a0767fdd847106df6ba2d0c68c8cc607e4e57b6d466d49a73d871e5975",
+				"dweb:/ipfs/QmcneJG33Y7X2xt9BBCMGzkPjBQLnGo8WEvjqXvUSmTPj9"
+			]
+		}
+	},
+	"version": 1
+}

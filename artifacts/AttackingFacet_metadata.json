@@ -1,0 +1,82 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "target",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "damageAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "energyCost",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "attackData",
+						"type": "bytes"
+					}
+				],
+				"name": "attackPlayer",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"0831_default_workspace/contracts/16_AttackingFacet.sol": "AttackingFacet"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"0831_default_workspace/contracts/14_DiamondInterfaces.sol": {
+			"keccak256": "0x0bdaefbab756dbe91eff7452a1821613939387620c1793716f464c0fb531c526",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://007ce9ecf67d0ff3f6844dcb40672302fa2520b84e44692b329cb2c19153e073",
+				"dweb:/ipfs/QmdYyqgJLexLNPxYAA6emc24wowtYG7YWBQAvJuoxkeA6z"
+			]
+		},
+		"0831_default_workspace/contracts/16_AttackingFacet.sol": {
+			"keccak256": "0x30cd13309c600503ea760a800ac600855a4c8696b85d63f74519efdc30d2040c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://036d7201bea0beb3f7bf50206c9c4cd679403bfadf5b04221471a01de820d815",
+				"dweb:/ipfs/Qmc1rv2rFNfnXfomAJYCmwcRFL5PASjuuq7GP44CwDp5ZA"
+			]
+		}
+	},
+	"version": 1
+}

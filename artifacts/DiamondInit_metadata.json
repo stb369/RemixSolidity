@@ -1,0 +1,82 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_energyToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_damageToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_attackSoulToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_blockSoulToken",
+						"type": "address"
+					}
+				],
+				"name": "init",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"0831_default_workspace/contracts/15_DiamondInit.sol": "DiamondInit"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"0831_default_workspace/contracts/14_DiamondInterfaces.sol": {
+			"keccak256": "0x0bdaefbab756dbe91eff7452a1821613939387620c1793716f464c0fb531c526",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://007ce9ecf67d0ff3f6844dcb40672302fa2520b84e44692b329cb2c19153e073",
+				"dweb:/ipfs/QmdYyqgJLexLNPxYAA6emc24wowtYG7YWBQAvJuoxkeA6z"
+			]
+		},
+		"0831_default_workspace/contracts/15_DiamondInit.sol": {
+			"keccak256": "0xee8a92644e7d8ce1e110add62d0415f8117bb20e956f865bbaa042284a26fce1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5addbbc89d6ae191c5b4f730e6c69abb2c66cd8bfa096f3d4db285f02bfe253f",
+				"dweb:/ipfs/QmU7diQm6MKzSELX68Z4gdEyFKWfJ76NSe6qRRtabwrJhq"
+			]
+		}
+	},
+	"version": 1
+}

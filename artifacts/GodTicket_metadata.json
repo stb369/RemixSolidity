@@ -869,7 +869,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"0831_default_workspace/contracts/13_GodTicket.sol": "GodTicket"
+			"0831_default_workspace/contracts/14_DiaInterfaces.sol": "GodTicket"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -883,7 +883,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"0831_default_workspace/contracts/13_GodTicket.sol": {
+		"0831_default_workspace/contracts/14_DiaInterfaces.sol": {
 			"keccak256": "0xfe5556d4d4a016cec7a385b31b37a2786842e9d5f4cc932359fbd934b1256a5c",
 			"license": "MIT",
 			"urls": [
